@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"testing"
 )
 
@@ -20,4 +21,29 @@ func TestNewDeck(t *testing.T) {
 	if d[len(d)-1] != expectedLastCard {
 		t.Errorf("Expected last card to be %v but was %v", expectedLastCard, d[len(d)-1])
 	}
+}
+
+func TestSaveToFileAndNewDeckFromFile(t *testing.T) {
+	deckTestingFilename := "_decktesting"
+
+	os.Remove(deckTestingFilename)
+
+	// saves deck to new file
+	nd := newDeck()
+	nd.saveToFile(deckTestingFilename)
+
+	lengthOfNewDeck := len(nd)
+
+	rd := readFile(deckTestingFilename)
+
+	if rd == nil {
+		t.Errorf("Failed to read/save deck to hard drive")
+	}
+
+	if lengthOfNewDeck != len(rd) {
+		t.Errorf("Deck read from disk has different length than the file created")
+	}
+
+	os.Remove(deckTestingFilename)
+
 }
