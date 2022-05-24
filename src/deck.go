@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"strings"
-	"math/rand"
 	"time"
 )
 
@@ -76,4 +76,3 @@ func (d deck) shuffle() {
 		d[i], d[np] = d[np], d[i]
 	}
 }
-
