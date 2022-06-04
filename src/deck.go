@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type deck []string
+type deck []card
 
 var cardSuits []string = []string{"Spades", "Hearts", "Diamonds", "Clovers"}
 var cardValues []string = []string{
@@ -22,19 +22,20 @@ var cardValues []string = []string{
 }
 
 func newDeck() deck {
-	cards := deck{}
-	for _, suit := range cardSuits {
-		for _, value := range cardValues {
-			cards = append(cards, value+" of "+suit)
+	createdDeck := deck{}
+	for _, csuit := range cardSuits {
+		for _, cvalue := range cardValues {
+			card := card{suit: csuit, value: cvalue}
+			createdDeck = append(createdDeck, card)
 		}
 	}
-	return cards
+	return createdDeck
 }
 
 // go receiver
 func (d deck) print() {
 	for _, card := range d {
-		fmt.Println(card)
+		fmt.Println(card.toString())
 	}
 }
 
@@ -44,7 +45,28 @@ func deal(d deck, handSize int) (deck, deck) {
 
 func (d deck) toString() (result string) {
 
-	result = strings.Join([]string(d), ",")
+	var cardsAsString []string
+
+	for _, c := range d {
+		cardsAsString = append(cardsAsString, c.toString())
+	}
+
+	result = strings.Join(cardsAsString, ",")
+
+	return
+}
+
+func deckFromString(input []string) (result deck, err []string) {
+	for _, c := range input {
+		r, e := cardFromString(c)
+
+		if len(e) == 0 {
+			result = append(result, r)
+			continue
+		}
+		err = append(err, e)
+
+	}
 
 	return
 }
@@ -59,12 +81,20 @@ func readFile(filename string) deck {
 	if err != nil {
 		fmt.Println("FAILED TO LOAD DECK FROM FILE: ", filename)
 		fmt.Println("Error: ", err)
-
 		os.Exit(1)
+	}
+
+	res, e := deckFromString(strings.Split(string(bs), ","))
+
+	if len(e) > 0 {
+		fmt.Println("Não foi possível converter os cards a seguir:")
+		for i, problem := range e {
+			fmt.Println(i, problem)
+		}
 
 	}
 
-	return deck(strings.Split(string(bs), ","))
+	return res
 }
 
 func (d deck) shuffle() {
